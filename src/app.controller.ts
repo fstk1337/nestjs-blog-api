@@ -9,4 +9,14 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('api/v1/user')
+  getUser() {
+    return {
+      id: 1,
+      name: 'Vasya',
+      email: 'vasya@mail.ru',
+      age: 41
+    }
+  }
 }
