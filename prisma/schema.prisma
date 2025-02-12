@@ -7,23 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model books {
-  id             Int       @id(map: "PK_f3f2f25a099d24e12545b70b022") @default(autoincrement())
-  createdAt      DateTime  @default(dbgenerated("'2025-01-28 17:14:47.163'::timestamp without time zone")) @db.Timestamp(6)
-  updatedAt      DateTime? @default(now()) @db.Timestamp(6)
-  title          String    @db.VarChar
-  author         String    @db.VarChar
-  ageRestriction Int
-  ownerId        Int?
-  image          String?   @db.VarChar
-}
-
 model users {
-  id           Int       @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
-  createdAt    DateTime  @default(dbgenerated("'2025-01-28 17:14:47.163'::timestamp without time zone")) @db.Timestamp(6)
+  id           Int       @default(autoincrement())
+  createdAt    DateTime  @default(dbgenerated()) @db.Timestamp(6)
   updatedAt    DateTime? @default(now()) @db.Timestamp(6)
   name         String    @db.VarChar
-  email        String    @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.VarChar
+  email        String    @unique() @db.VarChar
   age          Int
   passwordHash String    @db.VarChar
 }
