@@ -7,12 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
+model User {
   id           Int       @default(autoincrement())
-  createdAt    DateTime  @default(dbgenerated()) @db.Timestamp(6)
-  updatedAt    DateTime? @default(now()) @db.Timestamp(6)
+  createdAt    DateTime  @default(now()) @db.Timestamp(6) @map("created_at")
+  updatedAt    DateTime? @default(now()) @db.Timestamp(6) @map("updated_at")
   name         String    @db.VarChar
   email        String    @unique() @db.VarChar
   age          Int
-  passwordHash String    @db.VarChar
+  passwordHash String    @db.VarChar @map("password_hash")
+
+  @@map("users")
 }

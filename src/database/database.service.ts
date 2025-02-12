@@ -1,8 +1,8 @@
-import { INestApplication, Injectable } from '@nestjs/common';
+import { INestApplication, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class DatabaseService extends PrismaClient<Prisma.PrismaClientOptions, 'beforeExit'> {
+export class DatabaseService extends PrismaClient<Prisma.PrismaClientOptions, 'beforeExit'> implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await this.$connect();
   }
