@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigurationType } from './core/config/configurationType';
+import { ConfigurationType } from './core/config/configuration';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,9 +18,9 @@ async function bootstrap() {
   });
 
   //получение конфиг сервиса https://docs.nestjs.com/techniques/configuration#using-in-the-maints
-  const configService = app.get<ConfigService>(ConfigService<ConfigurationType>);
-  const port = configService.get('apiSettings.PORT', { infer: true })!;
+  const configService = app.get(ConfigService<ConfigurationType>);
+  const port = configService.get('PORT', { infer: true })!;
   
-  await app.listen(port ?? 3000);
+  await app.listen(port);
 }
 bootstrap();
