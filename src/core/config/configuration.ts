@@ -7,7 +7,8 @@ const configuration = () => ({
   DB_PORT: Number.parseInt(process.env.DB_PORT || '5432'),
   DB_TYPE: process.env.DB_TYPE,
   USERNAME: process.env.DB_NEST_USER,
-  PASSWORD: process.env.DB_PASSWORD
+  PASSWORD: process.env.DB_PASSWORD,
+  DATABASE_URL: process.env.DATABASE_URL,
 });
 
 export default configuration;
