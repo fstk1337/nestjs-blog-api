@@ -8,13 +8,76 @@ datasource db {
 }
 
 model User {
-  id           Int       @default(autoincrement())
-  createdAt    DateTime  @default(now()) @db.Timestamp(6) @map("created_at")
-  updatedAt    DateTime? @default(now()) @db.Timestamp(6) @map("updated_at")
-  name         String    @db.VarChar
-  email        String    @unique() @db.VarChar
-  age          Int
-  passwordHash String    @db.VarChar @map("password_hash")
+  id           Int       @id @default(autoincrement())
+  email        String    @unique @db.VarChar()
+  passwordHash String    @db.VarChar() @map("password_hash")
+  name         String?   @unique @db.VarChar()
+  age          Int?      @db.Integer()
+  role         Role      @default(USER)
+  posts        Post[]
+  comments     Comment[]
+  tagsOnPosts TagsOnPosts[]
 
   @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  author       User      @relation(fields: [authorId], references: [id])
+  authorId     Int       @db.Integer() @map("author_id")
+  category     Category  @relation(name: "CategoryToPosts", fields: [categoryId], references: [id])
+  categoryId   Int       @db.Integer() @map("category_id")
+  title        String    @db.VarChar()
+  content      String    @db.Text()
+  tags         TagsOnPosts[]
+  comments     Comment[] 
+  createdAt    DateTime  @default(now()) @db.Timestamp(6) @map("created_at")
+  updatedAt    DateTime  @updatedAt @db.Timestamp(6) @map("updated_at")
+
+  @@map("posts")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar()
+  posts       Post[]    @relation(name: "CategoryToPosts")
+
+  @@map("categories")
+}
+
+model Tag {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar()
+  posts       TagsOnPosts[]
+
+  @@map("tags")
+}
+
+model TagsOnPosts {
+  post        Post      @relation(fields: [postId], references: [id])
+  postId      Int       @db.Integer() @map("post_id")
+  tag         Tag       @relation(fields: [tagId], references: [id])
+  tagId       Int       @db.Integer() @map("tag_id")
+  assignedAt  DateTime  @default(now()) @db.Timestamp(6) @map("assigned_at")
+  assignedBy  User      @relation(fields: [assigneeId], references: [id])
+  assigneeId  Int       @db.Integer() @map("assignee_id")
+
+  @@id([postId, tagId])
+  @@map("tags_on_posts")
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  post        Post      @relation(fields: [postId], references: [id])
+  postId      Int       @db.Integer() @map("post_id")
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    Int       @db.Integer() @map("author_id")
+  text        String    @db.Text()
+
+  @@map("comments")
 }
