@@ -29,4 +29,20 @@ export class UsersService {
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
+
+  async userExists(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return false;
+    }
+    return true;
+  }
+
+  async emailExists(email: string) {
+    const user = await this.prisma.user.findFirst({ where: { email } });
+    if (!user) {
+      return false;
+    }
+    return true;
+  }
 }

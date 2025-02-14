@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,7 +23,15 @@ export class UsersController {
 
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
+    const emailExists = await this.usersService.emailExists(
+      createUserDto.email,
+    );
+    if (emailExists) {
+      throw new BadRequestException(
+        `User with email '${createUserDto.email}' already exists!`,
+      );
+    }
     return this.usersService.create(createUserDto);
   }
 
@@ -33,22 +43,36 @@ export class UsersController {
 
   @Get(':id')
   @ApiOkResponse({ type: UserEntity })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.usersService.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} does not exist.`);
+    }
+    return user;
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: UserEntity })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    const userExists = await this.usersService.userExists(id);
+    if (!userExists) {
+      throw new NotFoundException(`User with id ${id} does not exist.`);
+    }
+    const user = await this.usersService.update(id, updateUserDto);
+    return user;
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: UserEntity })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    const userExists = await this.usersService.userExists(id);
+    if (!userExists) {
+      throw new NotFoundException(`User with id ${id} does not exist.`);
+    }
+    const user = await this.usersService.remove(id);
+    return user;
   }
 }
