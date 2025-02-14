@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   //подключение глобального валидационного pipe https://docs.nestjs.com/techniques/validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   //разрешены запросы с любых доменов
   app.enableCors({
@@ -31,8 +31,8 @@ async function bootstrap() {
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/v1', app, swaggerDocument);
 
-
   const port = configService.get('PORT', { infer: true })!;
   await app.listen(port);
 }
+// eslint-disable-next-line
 bootstrap();

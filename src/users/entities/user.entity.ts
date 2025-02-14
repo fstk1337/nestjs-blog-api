@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 enum Role {
   USER,
-  ADMIN
+  ADMIN,
 }
 
 export class UserEntity {
@@ -22,5 +22,5 @@ export class UserEntity {
   age: number | null;
 
   @ApiProperty({ default: Role.USER })
-  role: Role
+  role: Role;
 }

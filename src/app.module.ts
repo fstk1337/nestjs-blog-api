@@ -13,7 +13,7 @@ import configuration from './core/config/configuration';
       envFilePath: ['.env.development.local', '.env.development'],
     }),
     DatabaseModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
