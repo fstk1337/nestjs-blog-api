@@ -10,7 +10,7 @@ datasource db {
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique @db.VarChar
-  password String        @map("password") @db.VarChar
+  password     String        @map("password") @db.VarChar
   name         String?       @unique @db.VarChar
   age          Int?
   role         Role          @default(USER)

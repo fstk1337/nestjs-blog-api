@@ -5,6 +5,8 @@ import { DatabaseModule } from 'src/database/database.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import configuration from '../core/config/configuration';
+import { UsersModule } from 'src/users/users.module';
+import { JwtStrategy } from './jwt.strategy';
 
 const config = configuration();
 
@@ -16,8 +18,9 @@ const config = configuration();
       secret: config['JWT_SECRET'],
       signOptions: { expiresIn: config['JWT_EXPIRES_IN'] },
     }),
+    UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}
