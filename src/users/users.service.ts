@@ -2,41 +2,57 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { generateHash } from 'src/core/bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: DatabaseService) {}
 
   create(createUserDto: CreateUserDto) {
+    const hash = generateHash(createUserDto.password);
     return this.prisma.user.create({
-      data: createUserDto,
-      omit: { passwordHash: true },
+      data: {
+        ...createUserDto,
+        password: hash,
+      },
+      omit: { password: true },
     });
   }
 
   findAll() {
-    return this.prisma.user.findMany({ omit: { passwordHash: true } });
+    return this.prisma.user.findMany({ omit: { password: true } });
   }
 
   findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      omit: { passwordHash: true },
+      omit: { password: true },
     });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
+    const newPassword = updateUserDto.password || null;
+    if (newPassword) {
+      return this.prisma.user.update({
+        where: { id },
+        data: {
+          ...updateUserDto,
+          password: generateHash(newPassword),
+        },
+        omit: { password: true },
+      });
+    }
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
-      omit: { passwordHash: true },
+      omit: { password: true },
     });
   }
 
   remove(id: number) {
     return this.prisma.user.delete({
       where: { id },
-      omit: { passwordHash: true },
+      omit: { password: true },
     });
   }
 

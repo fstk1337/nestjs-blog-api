@@ -13,7 +13,7 @@ export class UserEntity {
   email: string;
 
   @ApiProperty()
-  passwordHash: string;
+  password: string;
 
   @ApiProperty({ required: false, nullable: true })
   name: string | null;
