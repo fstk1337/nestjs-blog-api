@@ -20,7 +20,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserEntity } from './entity/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/v1/users')

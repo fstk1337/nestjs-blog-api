@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AuthEntity } from './entity/auth.entity';
+import { AuthEntity } from './entities/auth.entity';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
