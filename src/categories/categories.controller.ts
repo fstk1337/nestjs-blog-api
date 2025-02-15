@@ -25,12 +25,12 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('api/v1/categories')
 @ApiTags('categories')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: CategoryEntity })
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     const categoryExists = await this.categoriesService.categoryExists(
@@ -61,6 +61,8 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: CategoryEntity })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -82,13 +84,14 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: CategoryEntity })
   async remove(@Param('id', ParseIntPipe) id: number) {
-    const findCategory = await this.categoriesService.findOne(id);
-    if (!findCategory) {
+    const category = await this.categoriesService.findOne(id);
+    if (!category) {
       throw new NotFoundException(`Category with id ${id} does not exist.`);
     }
-    const category = await this.categoriesService.remove(id);
-    return category;
+    return this.categoriesService.remove(id);
   }
 }
