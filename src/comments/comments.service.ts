@@ -16,7 +16,13 @@ export class CommentsService {
   }
 
   findOne(id: number) {
-    return this.prisma.comment.findUnique({ where: { id } });
+    return this.prisma.comment.findUnique({
+      where: { id },
+      include: {
+        post: true,
+        author: true,
+      },
+    });
   }
 
   update(id: number, updateCommentDto: UpdateCommentDto) {

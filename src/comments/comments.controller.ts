@@ -45,6 +45,11 @@ export class CommentsController {
         `Post with id ${createCommentDto.postId} does not exist.`,
       );
     }
+    if (!post.published) {
+      throw new BadRequestException(
+        `Post with id ${createCommentDto.postId} not published, cannot add a comment.`,
+      );
+    }
     const userExists = await this.usersService.userExists(
       createCommentDto.authorId,
     );

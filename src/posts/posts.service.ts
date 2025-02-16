@@ -16,7 +16,14 @@ export class PostsService {
   }
 
   findOne(id: number) {
-    return this.prisma.post.findUnique({ where: { id } });
+    return this.prisma.post.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        category: true,
+        comments: true,
+      },
+    });
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
