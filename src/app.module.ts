@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { CommentsModule } from './comments/comments.module';
+import { PostsModule } from './posts/posts.module';
 import configuration from './core/config/configuration';
 
 @Module({
@@ -22,6 +23,7 @@ import configuration from './core/config/configuration';
     CategoriesModule,
     TagsModule,
     CommentsModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -26,7 +26,7 @@ model Post {
   authorId   Int           @map("author_id")
   categoryId Int           @map("category_id")
   title      String        @db.VarChar
-  content    String
+  content    String        @db.Text()
   published  Boolean       @default(false)
   createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)

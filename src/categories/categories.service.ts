@@ -30,7 +30,15 @@ export class CategoriesService {
     return this.prisma.category.delete({ where: { id } });
   }
 
-  async categoryExists(name: string) {
+  async categoryExists(id: number) {
+    const category = await this.prisma.category.findUnique({ where: { id } });
+    if (!category) {
+      return false;
+    }
+    return true;
+  }
+
+  async nameExists(name: string) {
     const category = await this.prisma.category.findFirst({ where: { name } });
     if (!category) {
       return false;

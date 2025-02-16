@@ -9,6 +9,7 @@ import {
   UseGuards,
   ParseIntPipe,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -21,18 +22,37 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CommentEntity } from './entities/comment.entity';
+import { UsersService } from 'src/users/users.service';
+import { PostsService } from 'src/posts/posts.service';
 
 @Controller('api/v1/comments')
 @ApiTags('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(
+    private readonly commentsService: CommentsService,
+    private readonly usersService: UsersService,
+    private readonly postsService: PostsService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: CommentEntity })
-  create(@Body() createCommentDto: CreateCommentDto) {
-    // TODO: add check if 1) post exists and 2) author exists
+  async create(@Body() createCommentDto: CreateCommentDto) {
+    const post = await this.postsService.findOne(createCommentDto.postId);
+    if (!post) {
+      throw new BadRequestException(
+        `Post with id ${createCommentDto.postId} does not exist.`,
+      );
+    }
+    const userExists = await this.usersService.userExists(
+      createCommentDto.authorId,
+    );
+    if (!userExists) {
+      throw new BadRequestException(
+        `User with id ${createCommentDto.authorId} does not exist.`,
+      );
+    }
     return this.commentsService.create(createCommentDto);
   }
 

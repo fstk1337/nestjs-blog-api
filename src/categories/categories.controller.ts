@@ -33,7 +33,7 @@ export class CategoriesController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: CategoryEntity })
   async create(@Body() createCategoryDto: CreateCategoryDto) {
-    const categoryExists = await this.categoriesService.categoryExists(
+    const categoryExists = await this.categoriesService.nameExists(
       createCategoryDto.name,
     );
     if (categoryExists) {
@@ -72,7 +72,7 @@ export class CategoriesController {
     if (!category) {
       throw new NotFoundException(`Category with id ${id} does not exist.`);
     }
-    const categoryExists = await this.categoriesService.categoryExists(
+    const categoryExists = await this.categoriesService.nameExists(
       updateCategoryDto.name,
     );
     if (categoryExists) {
