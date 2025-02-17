@@ -22,6 +22,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagEntity } from './entities/tag.entity';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('api/v1/tags')
 @ApiTags('tags')
@@ -29,7 +32,8 @@ export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: TagEntity })
   async create(@Body() createTagDto: CreateTagDto) {
@@ -59,7 +63,8 @@ export class TagsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: TagEntity })
   async update(
@@ -80,7 +85,8 @@ export class TagsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: TagEntity })
   async remove(@Param('id', ParseIntPipe) id: number) {

@@ -25,6 +25,14 @@ export class CommentsService {
     });
   }
 
+  findAllByAuthorId(authorId: number) {
+    return this.prisma.comment.findMany({ where: { authorId } });
+  }
+
+  findAllByPostId(postId: number) {
+    return this.prisma.comment.findMany({ where: { postId } });
+  }
+
   update(id: number, updateCommentDto: UpdateCommentDto) {
     return this.prisma.comment.update({
       where: { id },

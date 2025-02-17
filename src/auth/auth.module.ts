@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import configuration from '../core/config/configuration';
 import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './jwt.strategy';
+import { RolesGuard } from './roles.guard';
 
 const config = configuration();
 
@@ -21,6 +22,6 @@ const config = configuration();
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RolesGuard],
 })
 export class AuthModule {}

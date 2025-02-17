@@ -24,6 +24,11 @@ import { UsersService } from 'src/users/users.service';
 import { CategoriesService } from 'src/categories/categories.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PostEntity } from './entities/post.entity';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from '@prisma/client';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { CommentsService } from 'src/comments/comments.service';
+import { CommentEntity } from 'src/comments/entities/comment.entity';
 
 @Controller('api/v1/posts')
 @ApiTags('posts')
@@ -32,6 +37,7 @@ export class PostsController {
     private readonly postsService: PostsService,
     private readonly usersService: UsersService,
     private readonly categoriesService: CategoriesService,
+    private readonly commentsService: CommentsService,
   ) {}
 
   @Post()
@@ -76,6 +82,9 @@ export class PostsController {
   }
 
   @Get('drafts')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ type: PostEntity, isArray: true })
   async findDrafts() {
     const drafts = await this.postsService.findDrafts();
@@ -90,6 +99,15 @@ export class PostsController {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
     return new PostEntity(post);
+  }
+
+  @Get(':id/comments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: CommentEntity, isArray: true })
+  async findCommentsByPostId(@Param('id', ParseIntPipe) postId: number) {
+    const comments = await this.commentsService.findAllByPostId(postId);
+    return comments;
   }
 
   @Patch(':id')
