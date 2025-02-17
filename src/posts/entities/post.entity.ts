@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 export class PostEntity {
+  constructor({ author, ...data }: Partial<PostEntity>) {
+    Object.assign(this, data);
+    if (author) {
+      this.author = new UserEntity(author);
+    }
+  }
+
   @ApiProperty()
   id: number;
 
@@ -24,4 +32,7 @@ export class PostEntity {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty()
+  author?: UserEntity;
 }

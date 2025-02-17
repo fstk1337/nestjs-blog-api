@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigurationType } from './core/config/configuration';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -10,6 +10,9 @@ async function bootstrap() {
 
   //подключение глобального валидационного pipe https://docs.nestjs.com/techniques/validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  //подлючение глобального интерцептора
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   //разрешены запросы с любых доменов
   app.enableCors({

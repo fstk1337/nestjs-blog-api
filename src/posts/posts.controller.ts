@@ -65,13 +65,21 @@ export class PostsController {
         `Post with authorId '${createPostDto.authorId}', categoryId '${createPostDto.categoryId}' and title '${createPostDto.title}' already exists!`,
       );
     }
-    return this.postsService.create(createPostDto);
+    return new PostEntity(await this.postsService.create(createPostDto));
   }
 
   @Get()
   @ApiOkResponse({ type: PostEntity, isArray: true })
-  findAll() {
-    return this.postsService.findAll();
+  async findAll() {
+    const posts = await this.postsService.findAll();
+    return posts.map((post) => new PostEntity(post));
+  }
+
+  @Get('drafts')
+  @ApiOkResponse({ type: PostEntity, isArray: true })
+  async findDrafts() {
+    const drafts = await this.postsService.findDrafts();
+    return drafts.map((draft) => new PostEntity(draft));
   }
 
   @Get(':id')
@@ -81,7 +89,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
-    return post;
+    return new PostEntity(post);
   }
 
   @Patch(':id')
@@ -96,7 +104,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
-    return this.postsService.update(id, updatePostDto);
+    return new PostEntity(await this.postsService.update(id, updatePostDto));
   }
 
   @Patch(':id/publish')
@@ -108,7 +116,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
-    return this.postsService.publish(id);
+    return new PostEntity(await this.postsService.publish(id));
   }
 
   @Patch(':id/unpublish')
@@ -120,7 +128,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
-    return this.postsService.unpublish(id);
+    return new PostEntity(await this.postsService.unpublish(id));
   }
 
   @Delete(':id')
@@ -132,6 +140,6 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
-    return this.postsService.remove(id);
+    return new PostEntity(await this.postsService.remove(id));
   }
 }

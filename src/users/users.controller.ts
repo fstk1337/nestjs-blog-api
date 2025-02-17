@@ -39,15 +39,16 @@ export class UsersController {
         `User with email '${createUserDto.email}' already exists!`,
       );
     }
-    return this.usersService.create(createUserDto);
+    return new UserEntity(await this.usersService.create(createUserDto));
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map((user) => new UserEntity(user));
   }
 
   @Get(':id')
@@ -59,7 +60,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
-    return user;
+    return new UserEntity(user);
   }
 
   @Patch(':id')
@@ -75,7 +76,7 @@ export class UsersController {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
     const user = await this.usersService.update(id, updateUserDto);
-    return user;
+    return new UserEntity(user);
   }
 
   @Delete(':id')
@@ -88,6 +89,6 @@ export class UsersController {
       throw new NotFoundException(`User with id ${id} does not exist.`);
     }
     const user = await this.usersService.remove(id);
-    return user;
+    return new UserEntity(user);
   }
 }

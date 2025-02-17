@@ -15,6 +15,10 @@ export class PostsService {
     return this.prisma.post.findMany();
   }
 
+  findDrafts() {
+    return this.prisma.post.findMany({ where: { published: false } });
+  }
+
   findOne(id: number) {
     return this.prisma.post.findUnique({
       where: { id },

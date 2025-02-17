@@ -15,18 +15,16 @@ export class UsersService {
         ...createUserDto,
         password: hash,
       },
-      omit: { password: true },
     });
   }
 
   findAll() {
-    return this.prisma.user.findMany({ omit: { password: true } });
+    return this.prisma.user.findMany();
   }
 
   findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      omit: { password: true },
     });
   }
 
@@ -39,20 +37,17 @@ export class UsersService {
           ...updateUserDto,
           password: generateHash(newPassword),
         },
-        omit: { password: true },
       });
     }
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
-      omit: { password: true },
     });
   }
 
   remove(id: number) {
     return this.prisma.user.delete({
       where: { id },
-      omit: { password: true },
     });
   }
 

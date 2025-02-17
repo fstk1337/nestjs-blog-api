@@ -1,18 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role, User } from '@prisma/client';
+import { Exclude } from 'class-transformer';
 
-enum Role {
-  USER,
-  ADMIN,
-}
+export class UserEntity implements User {
+  constructor(partial: Partial<UserEntity>) {
+    Object.assign(this, partial);
+  }
 
-export class UserEntity {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
+  @Exclude()
   password: string;
 
   @ApiProperty({ required: false, nullable: true })
