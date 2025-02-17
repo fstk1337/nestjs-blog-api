@@ -27,6 +27,8 @@ import { Roles } from 'src/auth/roles.decorator';
 import { Role } from '@prisma/client';
 import { CommentsService } from 'src/comments/comments.service';
 import { CommentEntity } from 'src/comments/entities/comment.entity';
+import { PostsService } from 'src/posts/posts.service';
+import { PostEntity } from 'src/posts/entities/post.entity';
 
 @Controller('api/v1/users')
 @ApiTags('users')
@@ -34,6 +36,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly commentsService: CommentsService,
+    private readonly postsService: PostsService,
   ) {}
 
   @Post()
@@ -72,11 +75,28 @@ export class UsersController {
     return new UserEntity(user);
   }
 
+  @Get(':id/posts')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: PostEntity, isArray: true })
+  async findPostsByAuthorId(@Param('id', ParseIntPipe) authorId: number) {
+    const user = await this.usersService.findOne(authorId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${authorId} does not exist.`);
+    }
+    const posts = await this.postsService.findAllByAuthorId(authorId);
+    return posts;
+  }
+
   @Get(':id/comments')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: CommentEntity, isArray: true })
   async findCommentsByAuthorId(@Param('id', ParseIntPipe) authorId: number) {
+    const user = await this.usersService.findOne(authorId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${authorId} does not exist.`);
+    }
     const comments = await this.commentsService.findAllByAuthorId(authorId);
     return comments;
   }

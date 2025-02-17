@@ -106,6 +106,10 @@ export class PostsController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: CommentEntity, isArray: true })
   async findCommentsByPostId(@Param('id', ParseIntPipe) postId: number) {
+    const post = await this.postsService.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} does not exist.`);
+    }
     const comments = await this.commentsService.findAllByPostId(postId);
     return comments;
   }

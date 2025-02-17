@@ -15,6 +15,14 @@ export class PostsService {
     return this.prisma.post.findMany();
   }
 
+  findAllByAuthorId(authorId: number) {
+    return this.prisma.post.findMany({ where: { authorId } });
+  }
+
+  findAllByCategoryId(categoryId: number) {
+    return this.prisma.post.findMany({ where: { categoryId } });
+  }
+
   findDrafts() {
     return this.prisma.post.findMany({ where: { published: false } });
   }

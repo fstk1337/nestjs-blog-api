@@ -25,11 +25,16 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from '@prisma/client';
+import { PostsService } from 'src/posts/posts.service';
+import { PostEntity } from 'src/posts/entities/post.entity';
 
 @Controller('api/v1/categories')
 @ApiTags('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(
+    private readonly categoriesService: CategoriesService,
+    private readonly postsService: PostsService,
+  ) {}
 
   @Post()
   @Roles(Role.ADMIN)
@@ -62,6 +67,19 @@ export class CategoriesController {
       throw new NotFoundException(`Category with id ${id} does not exist.`);
     }
     return category;
+  }
+
+  @Get(':id/posts')
+  @ApiOkResponse({ type: PostEntity, isArray: true })
+  async findPostsByCategoryId(@Param('id', ParseIntPipe) categoryId: number) {
+    const category = await this.categoriesService.findOne(categoryId);
+    if (!category) {
+      throw new NotFoundException(
+        `Category with id ${categoryId} does not exist.`,
+      );
+    }
+    const posts = await this.postsService.findAllByCategoryId(categoryId);
+    return posts;
   }
 
   @Patch(':id')

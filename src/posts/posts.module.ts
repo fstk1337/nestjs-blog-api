@@ -12,7 +12,7 @@ import { CommentsModule } from 'src/comments/comments.module';
   imports: [
     DatabaseModule,
     forwardRef(() => UsersModule),
-    CategoriesModule,
+    forwardRef(() => CategoriesModule),
     forwardRef(() => CommentsModule),
   ],
   exports: [PostsService],
