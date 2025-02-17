@@ -119,6 +119,36 @@ export class TagsController {
     return tagsOnPosts;
   }
 
+  @Delete(':id/disconnect/:postId')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: TagsOnPostsEntity })
+  async disconnect(
+    @Param('id', ParseIntPipe) tagId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+  ) {
+    const tag = await this.tagsService.findOne(tagId);
+    if (!tag) {
+      throw new NotFoundException(`Tag with id ${tagId} does not exist.`);
+    }
+    const post = await this.postsService.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} does not exist.`);
+    }
+    const tagsOnPostsExists = await this.tagsService.tagsOnPostsExists(
+      tagId,
+      postId,
+    );
+    if (!tagsOnPostsExists) {
+      throw new BadRequestException(
+        `The tag with id ${tagId} is not connected to the post with id ${postId}.`,
+      );
+    }
+    const tagsOnPosts = await this.tagsService.disconnect(tagId, postId);
+    return tagsOnPosts;
+  }
+
   @Delete(':id')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)

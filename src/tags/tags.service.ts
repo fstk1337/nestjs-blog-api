@@ -41,6 +41,17 @@ export class TagsService {
     });
   }
 
+  disconnect(tagId: number, postId: number) {
+    return this.prisma.tagsOnPosts.delete({
+      where: {
+        postId_tagId: {
+          postId,
+          tagId,
+        },
+      },
+    });
+  }
+
   remove(id: number) {
     return this.prisma.tag.delete({ where: { id } });
   }
