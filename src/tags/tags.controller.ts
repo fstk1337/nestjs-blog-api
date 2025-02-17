@@ -159,6 +159,12 @@ export class TagsController {
     if (!tag) {
       throw new NotFoundException(`Tag with id ${id} does not exist.`);
     }
+    const tagConnected = await this.tagsService.tagConnected(id);
+    if (tagConnected) {
+      throw new BadRequestException(
+        `Tag with id ${id} connected to post, cannot delete.`,
+      );
+    }
     return this.tagsService.remove(id);
   }
 }

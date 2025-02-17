@@ -225,6 +225,19 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
+    if (post.published) {
+      throw new BadRequestException(
+        `The post with id ${id} is published, cannot delete.`,
+      );
+    }
+    const tagsOnPost = await this.postsService.getTagsOnPost(id);
+    for (const tag of tagsOnPost) {
+      await this.tagsService.disconnect(tag.tagId, tag.postId);
+    }
+    const comments = await this.commentsService.findAllByPostId(id);
+    for (const comment of comments) {
+      await this.commentsService.remove(comment.id);
+    }
     return new PostEntity(await this.postsService.remove(id));
   }
 }

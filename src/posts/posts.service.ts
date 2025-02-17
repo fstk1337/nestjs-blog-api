@@ -39,6 +39,12 @@ export class PostsService {
     });
   }
 
+  findOneByCategoryId(categoryId: number) {
+    return this.prisma.post.findFirst({
+      where: { categoryId },
+    });
+  }
+
   update(id: number, updatePostDto: UpdatePostDto) {
     return this.prisma.post.update({ where: { id }, data: updatePostDto });
   }
@@ -73,5 +79,10 @@ export class PostsService {
       return false;
     }
     return true;
+  }
+
+  async getTagsOnPost(postId: number) {
+    const tags = await this.prisma.tagsOnPosts.findMany({ where: { postId } });
+    return tags;
   }
 }

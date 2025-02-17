@@ -103,7 +103,8 @@ export class CategoriesController {
         `Category named '${updateCategoryDto.name}' already exists!`,
       );
     }
-    return this.categoriesService.update(id, updateCategoryDto);
+    const result = await this.categoriesService.update(id, updateCategoryDto);
+    return result;
   }
 
   @Delete(':id')
@@ -116,6 +117,13 @@ export class CategoriesController {
     if (!category) {
       throw new NotFoundException(`Category with id ${id} does not exist.`);
     }
-    return this.categoriesService.remove(id);
+    const post = await this.postsService.findOneByCategoryId(id);
+    if (post) {
+      throw new BadRequestException(
+        `There is a post with categoryId ${id}, cannot delete.`,
+      );
+    }
+    const result = await this.categoriesService.remove(id);
+    return result;
   }
 }

@@ -78,4 +78,16 @@ export class TagsService {
     }
     return true;
   }
+
+  async tagConnected(tagId: number) {
+    const tagsOnPosts = await this.prisma.tagsOnPosts.findFirst({
+      where: {
+        tagId,
+      },
+    });
+    if (!tagsOnPosts) {
+      return false;
+    }
+    return true;
+  }
 }
