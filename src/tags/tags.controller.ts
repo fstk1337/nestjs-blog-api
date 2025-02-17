@@ -25,11 +25,16 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from '@prisma/client';
+import { TagsOnPostsEntity } from './entities/tags-on-posts.entity';
+import { PostsService } from 'src/posts/posts.service';
 
 @Controller('api/v1/tags')
 @ApiTags('tags')
 export class TagsController {
-  constructor(private readonly tagsService: TagsService) {}
+  constructor(
+    private readonly tagsService: TagsService,
+    private readonly postsService: PostsService,
+  ) {}
 
   @Post()
   @Roles(Role.ADMIN)
@@ -82,6 +87,36 @@ export class TagsController {
       );
     }
     return this.tagsService.update(id, updateTagDto);
+  }
+
+  @Post(':id/connect/:postId')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: TagsOnPostsEntity })
+  async connect(
+    @Param('id', ParseIntPipe) tagId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+  ) {
+    const tag = await this.tagsService.findOne(tagId);
+    if (!tag) {
+      throw new NotFoundException(`Tag with id ${tagId} does not exist.`);
+    }
+    const post = await this.postsService.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} does not exist.`);
+    }
+    const tagsOnPostsExists = await this.tagsService.tagsOnPostsExists(
+      tagId,
+      postId,
+    );
+    if (tagsOnPostsExists) {
+      throw new BadRequestException(
+        `The tag with id ${tagId} already connected to the post with id ${postId}.`,
+      );
+    }
+    const tagsOnPosts = await this.tagsService.connect(tagId, postId);
+    return tagsOnPosts;
   }
 
   @Delete(':id')

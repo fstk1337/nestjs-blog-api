@@ -33,6 +33,7 @@ export class PostsService {
       include: {
         author: true,
         category: true,
+        tags: true,
         comments: true,
       },
     });

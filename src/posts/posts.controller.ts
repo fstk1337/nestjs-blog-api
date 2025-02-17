@@ -29,6 +29,8 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { CommentsService } from 'src/comments/comments.service';
 import { CommentEntity } from 'src/comments/entities/comment.entity';
+import { TagsOnPostsEntity } from 'src/tags/entities/tags-on-posts.entity';
+import { TagsService } from 'src/tags/tags.service';
 
 @Controller('api/v1/posts')
 @ApiTags('posts')
@@ -38,6 +40,7 @@ export class PostsController {
     private readonly usersService: UsersService,
     private readonly categoriesService: CategoriesService,
     private readonly commentsService: CommentsService,
+    private readonly tagsService: TagsService,
   ) {}
 
   @Post()
@@ -151,6 +154,36 @@ export class PostsController {
       throw new NotFoundException(`Post with id ${id} does not exist.`);
     }
     return new PostEntity(await this.postsService.unpublish(id));
+  }
+
+  @Post(':id/connect/:tagId')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: TagsOnPostsEntity })
+  async connect(
+    @Param('id', ParseIntPipe) postId: number,
+    @Param('tagId', ParseIntPipe) tagId: number,
+  ) {
+    const post = await this.postsService.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} does not exist.`);
+    }
+    const tag = await this.tagsService.findOne(tagId);
+    if (!tag) {
+      throw new NotFoundException(`Tag with id ${tagId} does not exist.`);
+    }
+    const tagsOnPostsExists = await this.tagsService.tagsOnPostsExists(
+      tagId,
+      postId,
+    );
+    if (tagsOnPostsExists) {
+      throw new BadRequestException(
+        `The tag with id ${tagId} already connected to the post with id ${postId}.`,
+      );
+    }
+    const tagsOnPosts = await this.tagsService.connect(tagId, postId);
+    return tagsOnPosts;
   }
 
   @Delete(':id')
