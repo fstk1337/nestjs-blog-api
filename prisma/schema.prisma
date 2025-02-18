@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique @db.VarChar
+  password     String        @map("password") @db.VarChar
+  name         String?       @unique @db.VarChar
+  age          Int?
+  role         Role          @default(USER)
+  comments     Comment[]
+  posts        Post[]
+  tagsOnPosts  TagsOnPosts[]
+
+  @@map("users")
+}
+
+model Post {
+  id         Int           @id @default(autoincrement())
+  authorId   Int           @map("author_id")
+  categoryId Int           @map("category_id")
+  title      String        @db.VarChar
+  content    String        @db.Text()
+  published  Boolean       @default(false)
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+  comments   Comment[]
+  author     User          @relation(fields: [authorId], references: [id])
+  category   Category      @relation("CategoryToPosts", fields: [categoryId], references: [id])
+  tags       TagsOnPosts[]
+
+  @@map("posts")
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar
+  posts Post[] @relation("CategoryToPosts")
+
+  @@map("categories")
+}
+
+model Tag {
+  id    Int           @id @default(autoincrement())
+  name  String        @unique @db.VarChar
+  posts TagsOnPosts[]
+
+  @@map("tags")
+}
+
+model TagsOnPosts {
+  postId     Int      @map("post_id")
+  tagId      Int      @map("tag_id")
+  assignedAt DateTime @default(now()) @map("assigned_at") @db.Timestamp(6)
+  assigneeId Int      @map("assignee_id")
+  assignedBy User     @relation(fields: [assigneeId], references: [id])
+  post       Post     @relation(fields: [postId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+  @@map("tags_on_posts")
+}
+
+model Comment {
+  id       Int    @id @default(autoincrement())
+  postId   Int    @map("post_id")
+  authorId Int    @map("author_id")
+  text     String
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+  author   User   @relation(fields: [authorId], references: [id])
+  post     Post   @relation(fields: [postId], references: [id])
+
+  @@map("comments")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
