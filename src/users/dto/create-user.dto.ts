@@ -20,6 +20,9 @@ export class CreateUserDto {
   @Length(6)
   password: string;
 
+  @ApiProperty()
+  refreshToken: string | null;
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()

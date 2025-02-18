@@ -1,25 +1,17 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
   ParseIntPipe,
   NotFoundException,
-  BadRequestException,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
@@ -38,20 +30,6 @@ export class UsersController {
     private readonly commentsService: CommentsService,
     private readonly postsService: PostsService,
   ) {}
-
-  @Post()
-  @ApiCreatedResponse({ type: UserEntity })
-  async create(@Body() createUserDto: CreateUserDto) {
-    const emailExists = await this.usersService.emailExists(
-      createUserDto.email,
-    );
-    if (emailExists) {
-      throw new BadRequestException(
-        `User with email '${createUserDto.email}' already exists!`,
-      );
-    }
-    return new UserEntity(await this.usersService.create(createUserDto));
-  }
 
   @Get()
   @Roles(Role.ADMIN)
