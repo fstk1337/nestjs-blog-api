@@ -10,7 +10,9 @@ import { TagsModule } from './tags/tags.module';
 import { CommentsModule } from './comments/comments.module';
 import { PostsModule } from './posts/posts.module';
 import { UploadModule } from './core/upload/upload.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import configuration from './core/config/configuration';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -26,6 +28,10 @@ import configuration from './core/config/configuration';
     CommentsModule,
     PostsModule,
     UploadModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
