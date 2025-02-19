@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { CommentsModule } from './comments/comments.module';
 import { PostsModule } from './posts/posts.module';
+import { UploadModule } from './core/upload/upload.module';
 import configuration from './core/config/configuration';
 
 @Module({
@@ -24,6 +25,7 @@ import configuration from './core/config/configuration';
     TagsModule,
     CommentsModule,
     PostsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
