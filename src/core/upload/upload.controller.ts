@@ -7,20 +7,27 @@ import {
   ParseIntPipe,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 import * as path from 'path';
-import * as fs from 'fs';
+import { PostsService } from 'src/posts/posts.service';
+import { PostImageInterceptor } from './post-image.interceptor';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('upload')
 @ApiTags('upload')
 export class UploadController {
+  constructor(private readonly postsService: PostsService) {}
+
   @Post('common')
   @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiBody({
     schema: {
       type: 'object',
@@ -65,6 +72,8 @@ export class UploadController {
 
   @Post('post/:id')
   @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiBody({
     schema: {
       type: 'object',
@@ -76,31 +85,8 @@ export class UploadController {
       },
     },
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: function (req, _, callback) {
-          const newPath = path.join(
-            __dirname,
-            '../../..',
-            `uploads/posts/${req.params.id}`,
-          );
-          if (!fs.existsSync(newPath)) {
-            fs.mkdirSync(newPath, { recursive: true });
-          }
-          callback(null, `./uploads/posts/${req.params.id}`);
-        },
-        filename(_, file, callback) {
-          const extension = path.extname(file.originalname);
-          const name = path.basename(file.originalname, extension);
-          const suffix = v4();
-          const uploadedFilename = `${name}-${suffix}${extension}`;
-          callback(null, uploadedFilename);
-        },
-      }),
-    }),
-  )
-  uploadPostImage(
+  @UseInterceptors(PostImageInterceptor)
+  async uploadPostImage(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile(
       new ParseFilePipe({
@@ -112,6 +98,10 @@ export class UploadController {
     )
     file: Express.Multer.File,
   ) {
+    await this.postsService.update(id, {
+      image: file.path,
+    });
+
     return {
       image: file.path,
       size: file.size,

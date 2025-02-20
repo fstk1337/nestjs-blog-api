@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
 } from 'class-validator';
 
 export class CreatePostDto {
@@ -27,6 +28,12 @@ export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  image: string;
 
   @ApiProperty({ required: false, default: false })
   @IsBoolean()

@@ -14,6 +14,7 @@ model User {
   name         String?       @unique @db.VarChar
   age          Int?
   role         Role          @default(USER)
+  image        String?       @db.VarChar
   refreshToken String?       @map("refresh_token") @db.VarChar
   comments     Comment[]
   posts        Post[]
@@ -28,6 +29,7 @@ model Post {
   categoryId Int           @map("category_id")
   title      String        @db.VarChar
   content    String        @db.Text()
+  image      String?       @db.VarChar
   published  Boolean       @default(false)
   createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)

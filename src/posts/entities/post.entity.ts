@@ -24,6 +24,9 @@ export class PostEntity {
   @ApiProperty()
   content: string;
 
+  @ApiProperty({ required: false, nullable: true })
+  image: string | null;
+
   @ApiProperty({ required: false, default: false })
   published: boolean;
 

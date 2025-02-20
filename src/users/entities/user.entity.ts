@@ -20,6 +20,9 @@ export class UserEntity implements User {
   refreshToken: string | null;
 
   @ApiProperty({ required: false, nullable: true })
+  image: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
   name: string | null;
 
   @ApiProperty({ required: false, nullable: true })

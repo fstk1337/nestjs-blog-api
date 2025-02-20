@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   Length,
 } from 'class-validator';
 
@@ -22,6 +23,12 @@ export class CreateUserDto {
 
   @ApiProperty()
   refreshToken: string | null;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  image?: string;
 
   @ApiProperty({ required: false })
   @IsString()
