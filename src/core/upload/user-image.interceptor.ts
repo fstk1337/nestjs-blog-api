@@ -5,56 +5,56 @@ import {
   NestInterceptor,
   NotFoundException,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import * as fs from 'fs';
+import * as path from 'path';
+import { UsersService } from 'src/users/users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
-import * as path from 'path';
-import * as fs from 'fs';
-import { PostsService } from 'src/posts/posts.service';
-import { Observable } from 'rxjs';
 import { fileFilter } from './file-filter';
 
 @Injectable()
-export class PostImageInterceptor implements NestInterceptor {
-  constructor(private readonly postsService: PostsService) {}
+export class UserImageInterceptor implements NestInterceptor {
+  constructor(private readonly usersService: UsersService) {}
 
   async intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
     const ctx = context.switchToHttp();
-    const postId = parseInt(
+    const userId = parseInt(
       ctx.getRequest<{ params: { id: string } }>().params.id,
     );
-    const post = await this.postsService.findOne(postId);
+    const user = await this.usersService.findOne(userId);
 
-    if (!post) {
-      throw new NotFoundException(`Post with id ${postId} does not exist.`);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} does not exist.`);
     }
 
     if (
-      post.image &&
-      fs.existsSync(path.join(__dirname, '../../..', post.image))
+      user.image &&
+      fs.existsSync(path.join(__dirname, '../../..', user.image))
     ) {
-      fs.unlinkSync(path.join(__dirname, '../../..', post.image));
+      fs.unlinkSync(path.join(__dirname, '../../..', user.image));
     }
 
-    const postImgInterceptor = FileInterceptor('file', {
+    const userImgInterceptor = FileInterceptor('file', {
       fileFilter: fileFilter('image'),
       limits: {
-        fileSize: parseInt(process.env['IMG_POST_MAX_SIZE'] || '204800'),
+        fileSize: parseInt(process.env['IMG_USER_MAX_SIZE'] || '204800'),
       },
       storage: diskStorage({
         destination: function (_, __, cb) {
           const newPath = path.join(
             __dirname,
             '../../..',
-            `uploads/posts/${post.id}`,
+            `uploads/users/${user.id}`,
           );
           if (!fs.existsSync(newPath)) {
             fs.mkdirSync(newPath, { recursive: true });
           }
-          cb(null, `./uploads/posts/${post.id}`);
+          cb(null, `./uploads/users/${user.id}`);
         },
         filename(_, file, callback) {
           const extension = path.extname(file.originalname);
@@ -66,6 +66,6 @@ export class PostImageInterceptor implements NestInterceptor {
       }),
     });
 
-    return new postImgInterceptor().intercept(context, next);
+    return new userImgInterceptor().intercept(context, next);
   }
 }

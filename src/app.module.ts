@@ -19,6 +19,7 @@ import { join } from 'path';
     ConfigModule.forRoot({
       load: [configuration],
       envFilePath: ['.env.development.local', '.env.development'],
+      isGlobal: true,
     }),
     DatabaseModule,
     UsersModule,
