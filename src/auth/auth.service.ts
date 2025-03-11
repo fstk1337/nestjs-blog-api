@@ -30,11 +30,11 @@ export class AuthService {
       throw new UnauthorizedException('User credentials mismatch.');
     }
 
-    if (user.refreshToken != null) {
-      throw new BadRequestException(
-        `User with id ${user.id} is already logged in.`,
-      );
-    }
+    // if (user.refreshToken != null) {
+    //   throw new BadRequestException(
+    //     `User with id ${user.id} is already logged in.`,
+    //   );
+    // }
 
     const isPasswordValid = verifyPassword(password, user.password);
 
