@@ -14,6 +14,8 @@ import { PostsService } from 'src/posts/posts.service';
 import { Observable } from 'rxjs';
 import { fileFilter } from './file-filter';
 
+const rootPath = path.resolve('./');
+
 @Injectable()
 export class PostImageInterceptor implements NestInterceptor {
   constructor(private readonly postsService: PostsService) {}
@@ -32,11 +34,8 @@ export class PostImageInterceptor implements NestInterceptor {
       throw new NotFoundException(`Post with id ${postId} does not exist.`);
     }
 
-    if (
-      post.image &&
-      fs.existsSync(path.join(__dirname, '../../..', post.image))
-    ) {
-      fs.unlinkSync(path.join(__dirname, '../../..', post.image));
+    if (post.image && fs.existsSync(path.join(rootPath, post.image))) {
+      fs.unlinkSync(path.join(rootPath, post.image));
     }
 
     const postImgInterceptor = FileInterceptor('file', {
@@ -46,11 +45,7 @@ export class PostImageInterceptor implements NestInterceptor {
       },
       storage: diskStorage({
         destination: function (_, __, cb) {
-          const newPath = path.join(
-            __dirname,
-            '../../..',
-            `uploads/posts/${post.id}`,
-          );
+          const newPath = path.join(rootPath, `uploads/posts/${post.id}`);
           if (!fs.existsSync(newPath)) {
             fs.mkdirSync(newPath, { recursive: true });
           }

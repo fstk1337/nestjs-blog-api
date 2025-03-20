@@ -8,15 +8,9 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { RolesGuard } from './roles.guard';
 import { JwtRefreshStrategy } from './jwt-refresh.strategy';
-import { ConfigModule } from '@nestjs/config';
-import configuration from 'src/core/config/configuration';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
-      envFilePath: ['.env.development.local', '.env.development'],
-    }),
     DatabaseModule,
     PassportModule,
     JwtModule.register({}),

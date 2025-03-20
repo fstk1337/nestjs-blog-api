@@ -14,6 +14,8 @@ import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
 import { fileFilter } from './file-filter';
 
+const rootPath = path.resolve('./');
+
 @Injectable()
 export class UserImageInterceptor implements NestInterceptor {
   constructor(private readonly usersService: UsersService) {}
@@ -32,11 +34,8 @@ export class UserImageInterceptor implements NestInterceptor {
       throw new NotFoundException(`User with id ${userId} does not exist.`);
     }
 
-    if (
-      user.image &&
-      fs.existsSync(path.join(__dirname, '../../..', user.image))
-    ) {
-      fs.unlinkSync(path.join(__dirname, '../../..', user.image));
+    if (user.image && fs.existsSync(path.join(rootPath, user.image))) {
+      fs.unlinkSync(path.join(rootPath, user.image));
     }
 
     const userImgInterceptor = FileInterceptor('file', {
@@ -46,11 +45,7 @@ export class UserImageInterceptor implements NestInterceptor {
       },
       storage: diskStorage({
         destination: function (_, __, cb) {
-          const newPath = path.join(
-            __dirname,
-            '../../..',
-            `uploads/users/${user.id}`,
-          );
+          const newPath = path.join(rootPath, `uploads/users/${user.id}`);
           if (!fs.existsSync(newPath)) {
             fs.mkdirSync(newPath, { recursive: true });
           }

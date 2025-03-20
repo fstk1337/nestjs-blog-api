@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entities/auth.entity';
 import { generateHash, verifyPassword } from 'src/core/bcrypt';
@@ -29,12 +25,6 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User credentials mismatch.');
     }
-
-    // if (user.refreshToken != null) {
-    //   throw new BadRequestException(
-    //     `User with id ${user.id} is already logged in.`,
-    //   );
-    // }
 
     const isPasswordValid = verifyPassword(password, user.password);
 
