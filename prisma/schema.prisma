@@ -15,7 +15,7 @@ model User {
   age          Int?
   role         Role          @default(USER)
   image        String?       @db.VarChar
-  refreshToken String?       @map("refresh_token") @db.VarChar
+  activated    Boolean       @default(true)
   comments     Comment[]
   posts        Post[]
   tagsOnPosts  TagsOnPosts[]
@@ -28,11 +28,11 @@ model Post {
   authorId   Int           @map("author_id")
   categoryId Int           @map("category_id")
   title      String        @db.VarChar
-  content    String        @db.Text()
-  image      String?       @db.VarChar
+  content    String
   published  Boolean       @default(false)
   createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+  image      String?       @db.VarChar
   comments   Comment[]
   author     User          @relation(fields: [authorId], references: [id])
   category   Category      @relation("CategoryToPosts", fields: [categoryId], references: [id])
@@ -71,14 +71,14 @@ model TagsOnPosts {
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
-  postId   Int    @map("post_id")
-  authorId Int    @map("author_id")
-  text     String
-  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
-  author   User   @relation(fields: [authorId], references: [id])
-  post     Post   @relation(fields: [postId], references: [id])
+  id        Int      @id @default(autoincrement())
+  postId    Int      @map("post_id")
+  authorId  Int      @map("author_id")
+  text      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 
   @@map("comments")
 }

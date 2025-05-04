@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entities/auth.entity';
-import { generateHash, verifyPassword } from 'src/core/bcrypt';
+import { verifyPassword } from 'src/core/bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -32,7 +32,7 @@ export class AuthService {
       throw new UnauthorizedException('User credentials mismatch.');
     }
 
-    const [accessToken, refreshToken] = await Promise.all([
+    const [accessToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           userId: user.id,
@@ -44,33 +44,10 @@ export class AuthService {
           expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
         },
       ),
-      this.jwtService.signAsync(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-        },
-        {
-          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-        },
-      ),
     ]);
-    await this.storeRefreshToken(user.id, refreshToken);
 
     return {
       accessToken,
-      refreshToken,
     };
-  }
-
-  storeRefreshToken(userId: number, refreshToken: string) {
-    return this.usersService.update(userId, {
-      refreshToken: generateHash(refreshToken),
-    });
-  }
-
-  removeRefreshToken(userId: number) {
-    return this.usersService.update(userId, { refreshToken: null });
   }
 }

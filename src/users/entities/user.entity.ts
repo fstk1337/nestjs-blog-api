@@ -16,12 +16,6 @@ export class UserEntity implements User {
   @Exclude()
   password: string;
 
-  @Exclude()
-  refreshToken: string | null;
-
-  @ApiProperty({ required: false, nullable: true })
-  image: string | null;
-
   @ApiProperty({ required: false, nullable: true })
   name: string | null;
 
@@ -30,4 +24,11 @@ export class UserEntity implements User {
 
   @ApiProperty({ default: Role.USER })
   role: Role;
+
+  @ApiProperty({ required: false, nullable: true })
+  image: string | null;
+
+  @ApiProperty({ default: true })
+  @Exclude()
+  activated: boolean;
 }

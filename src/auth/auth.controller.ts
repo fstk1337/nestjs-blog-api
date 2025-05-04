@@ -4,17 +4,17 @@ import {
   Controller,
   NotFoundException,
   Post,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
 import { LoginDto } from './dto/login.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import { verifyPassword } from 'src/core/bcrypt';
 import { LogoutDto } from './dto/logout.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -46,21 +46,14 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse()
-  async logout(@Body() { userId, refreshToken }: LogoutDto) {
+  async logout(@Body() { userId }: LogoutDto) {
     const user = await this.usersService.findOne(userId);
     if (!user) {
       throw new NotFoundException(`User with id ${userId} does not exist.`);
     }
-    if (!user.refreshToken) {
-      throw new UnauthorizedException(
-        `User with id ${userId} is not logged in.`,
-      );
-    }
-    if (!verifyPassword(refreshToken, user.refreshToken)) {
-      throw new UnauthorizedException(`Refresh token provided is not valid.`);
-    }
-    const result = await this.authService.removeRefreshToken(userId);
-    return new UserEntity(result);
+    return new UserEntity(user);
   }
 }

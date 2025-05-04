@@ -19,7 +19,11 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({ where: { activated: true } });
+  }
+
+  findInactive() {
+    return this.prisma.user.findMany({ where: { activated: false } });
   }
 
   findOne(id: number) {
