@@ -27,6 +27,11 @@ export class CreatePostDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   content: string;
 
   @ApiProperty()

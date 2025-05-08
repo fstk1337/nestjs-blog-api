@@ -11,7 +11,7 @@ model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique @db.VarChar
   password     String        @map("password") @db.VarChar
-  name         String?       @unique @db.VarChar
+  name         String        @db.VarChar
   age          Int?
   role         Role          @default(USER)
   image        String?       @db.VarChar
@@ -24,19 +24,20 @@ model User {
 }
 
 model Post {
-  id         Int           @id @default(autoincrement())
-  authorId   Int           @map("author_id")
-  categoryId Int           @map("category_id")
-  title      String        @db.VarChar
-  content    String
-  published  Boolean       @default(false)
-  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
-  image      String?       @db.VarChar
-  comments   Comment[]
-  author     User          @relation(fields: [authorId], references: [id])
-  category   Category      @relation("CategoryToPosts", fields: [categoryId], references: [id])
-  tags       TagsOnPosts[]
+  id          Int           @id @default(autoincrement())
+  authorId    Int           @map("author_id")
+  categoryId  Int           @map("category_id")
+  title       String        @db.VarChar
+  description String
+  content     String
+  published   Boolean       @default(false)
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+  image       String?       @db.VarChar
+  comments    Comment[]
+  author      User          @relation(fields: [authorId], references: [id])
+  category    Category      @relation("CategoryToPosts", fields: [categoryId], references: [id])
+  tags        TagsOnPosts[]
 
   @@map("posts")
 }
