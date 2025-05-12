@@ -11,8 +11,10 @@ import { UploadModule } from './core/upload/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import configuration from './core/config/configuration';
 import { join } from 'path';
+import { AppController } from './app.controller';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
