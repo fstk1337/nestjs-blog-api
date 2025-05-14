@@ -22,7 +22,13 @@ export class PostEntity {
   title: string;
 
   @ApiProperty()
+  description: string;
+
+  @ApiProperty()
   content: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  image: string | null;
 
   @ApiProperty({ required: false, default: false })
   published: boolean;

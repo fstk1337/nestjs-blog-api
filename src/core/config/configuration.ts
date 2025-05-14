@@ -5,6 +5,8 @@ const configuration = () => ({
   DATABASE_URL: process.env.DATABASE_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
   DB_NAME: process.env.DB_NAME,
   DB_HOST: process.env.DB_HOST,
   DB_PORT: Number.parseInt(process.env.DB_PORT || '5432'),

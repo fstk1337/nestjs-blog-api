@@ -16,12 +16,19 @@ export class UserEntity implements User {
   @Exclude()
   password: string;
 
-  @ApiProperty({ required: false, nullable: true })
-  name: string | null;
+  @ApiProperty({ required: false, nullable: false })
+  name: string;
 
   @ApiProperty({ required: false, nullable: true })
   age: number | null;
 
   @ApiProperty({ default: Role.USER })
   role: Role;
+
+  @ApiProperty({ required: false, nullable: true })
+  image: string | null;
+
+  @ApiProperty({ default: true })
+  @Exclude()
+  activated: boolean;
 }

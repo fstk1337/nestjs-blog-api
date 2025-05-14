@@ -67,6 +67,14 @@ export class PostsService {
     return this.prisma.post.delete({ where: { id } });
   }
 
+  async postExists(id: number) {
+    const post = await this.prisma.post.findUnique({ where: { id } });
+    if (!post) {
+      return false;
+    }
+    return true;
+  }
+
   async postUnique(authorId: number, categoryId: number, title: string) {
     const post = await this.prisma.post.findFirst({
       where: {
